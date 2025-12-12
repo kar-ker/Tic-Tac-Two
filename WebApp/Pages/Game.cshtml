@@ -1,0 +1,262 @@
+@page
+@using GameBrain
+@model WebApp.Pages.GameModel
+
+@{
+    ViewData["Title"] = "Game";
+}
+@if (Model.Error != null)
+{
+    <div class="alert-danger">@Model.Error</div>
+}
+@if (Model.GameOver)
+{
+    <div class="game-over-box">
+        <div class="alert-danger">GAME OVER</div>
+        <div class="alert-success">Winner: @Model.GameInstance.NextMoveBy.PlName</div>
+        <div class="alert-info">Turns played: @Model.GameInstance.TurnsPlayed</div>
+    </div>
+}
+@if (!Model.GameOver)
+{
+    <div class="game">
+        <div class="game__left-side">
+            <div class="info-block">This is turn @Model.GameInstance.TurnsPlayed</div>
+            <div class="info-block">You are @Model.LoggedPlayer.PlName</div>
+            <div class="info-block">Current move By: @Model.GameInstance.NextMoveBy.PlName</div>
+            <br/>
+            @if (Model.GameInstance.TurnsPlayed >= Model.GameInstance.GameConfiguration.StartMovingPieceOnTurnN)
+            {
+                <div class="info-block">You can relocate a piece by clicking on an existing piece and selecting a new empty square.</div>
+            }
+            @if (Model.GameInstance.TurnsPlayed >= Model.GameInstance.GameConfiguration.StartMovingGridOnTurnN)
+            {
+                <div class="info-block">You can move the grid with the grid buttons.</div>
+            }
+            <div class="players">
+                @foreach (var player in Model.GameInstance.Players)
+                {
+                    <div class="player">
+                        <div class="player__name">
+                            <h5>@player.PlName</h5>
+                        </div>
+                        @if (player.PlName != "Ai" && player.PlName != "Ai1" && player.PlName != "Ai2")
+                        {
+                            <div class="player__password">
+                                Password: @player.Password
+                            </div>
+                        }
+                        <div class="player__symbol">
+                            Symbol: @player.PlSymbol, @player.PlPiecesOnHand pieces on hand
+                        </div>
+                        <div class="player__pieces">
+                            @for (var p = 0; p < player.PlPiecesOnHand; p++)
+                            {
+                                <div class="cell--piece">
+                                    @EnumHelper.EGamePieceToString(player.PlSymbol)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+        <div class="game__right-side">
+            <div class="game__board">
+                <form id="gameBoardForm" method="post">
+                    <input type="hidden" asp-for="Command" id="pieceCommand" value="Empty"/>
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Mode"/>
+                    <input type="hidden" asp-for="PlayerName"/>
+                    <input type="hidden" asp-for="PlayerPass"/>
+                    <input type="hidden" asp-for="GameStateJson" value="@Model.GameInstance.GetGameStateJson()"/>
+                    <input type="hidden" asp-for="ConfigName" value="@Model.GameInstance.GetGameConfigName()"/>
+                    <input type="hidden" asp-for="FirstPieceCoordinates" value=""/>
+                    <input type="hidden" asp-for="SecondPieceCoordinates" value=""/>
+
+
+                    @for (var y = 0; y < Model.GameInstance.DimY; y++)
+                    {
+                        <div class="row">
+                            @for (var x = 0; x < Model.GameInstance.DimX; x++)
+                            {
+                                if (Model.GameInstance.GameGrid.IsUnderGridArea(x, y))
+                                {
+                                    <div id="@x,@y" name="pieceButton" class="cell--piece cell--grid">
+                                        <div class="piece">
+                                            @EnumHelper.EGamePieceToString(Model.GameInstance.GameBoard[x][y])
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div id="@x,@y" name="pieceButton" class="cell--piece">
+                                        <div class="piece">
+                                            @EnumHelper.EGamePieceToString(Model.GameInstance.GameBoard[x][y])
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </form>
+            </div>
+
+            <div class="bottom row">
+                <div class="col">
+                    <form method="post">
+                        <input type="hidden" asp-for="Command" id="gridCommand" value="RelocateTheGrid"/>
+                        <input type="hidden" asp-for="Id"/>
+                        <input type="hidden" asp-for="Mode"/>
+                        <input type="hidden" asp-for="PlayerName"/>
+                        <input type="hidden" asp-for="PlayerPass"/>
+                        <input type="hidden" asp-for="GameStateJson" value="@Model.GameInstance.GetGameStateJson()"/>
+                        <input type="hidden" asp-for="ConfigName" value="@Model.GameInstance.GetGameConfigName()"/>
+                        <div class="movement-buttons">
+                            @for (var rowNumber = -1; rowNumber < 2; rowNumber++)
+                            {
+                                <div class="row">
+                                    @for (var columnNumber = -1; columnNumber < 2; columnNumber++)
+                                    {
+                                        if (rowNumber != 0 || columnNumber != 0)
+                                        {
+                                            if (Model.GameInstance.NextMoveBy.PlName != "Ai"
+                                                && Model.GameInstance.NextMoveBy.PlName != "Ai1"
+                                                && Model.GameInstance.NextMoveBy.PlName != "Ai2")
+                                            {
+                                                <input type="radio" asp-for="GridOffset" value="@columnNumber,@rowNumber"
+                                                       class="cell my-radio"/>
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" asp-for="GridOffset" value="@columnNumber,@rowNumber"
+                                                       class="cell my-radio" disabled/>
+                                            }
+                                            
+                                        }
+                                        else
+                                        {
+                                            if (Model.GameInstance.NextMoveBy.PlName != "Ai"
+                                                && Model.GameInstance.NextMoveBy.PlName != "Ai1"
+                                                && Model.GameInstance.NextMoveBy.PlName != "Ai2")
+                                            {
+                                                <input type="submit" id="submitButton" value="G"
+                                                       class="grid-button btn-warning"/>
+                                            }
+                                            else
+                                            {
+                                                <input type="submit" id="submitButton" value=""
+                                                       class="grid-button btn-warning" disabled/>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+                <div class="col">
+                    @if (Model.GameInstance.NextMoveBy.PlName != "Ai"
+                         && Model.GameInstance.NextMoveBy.PlName != "Ai1"
+                         && Model.GameInstance.NextMoveBy.PlName != "Ai2")
+                    {
+                        <div>
+                            <input type="submit" onclick="submitForm()" value="Submit your piece move"
+                                   class="btn btn-warning">
+                        </div>
+                    }
+                    @if (Model.GameInstance.NextMoveBy.PlName == "Ai"
+                         || Model.GameInstance.NextMoveBy.PlName == "Ai1"
+                         || Model.GameInstance.NextMoveBy.PlName == "Ai2")
+                    {
+                        <form method="post">
+                            <input type="hidden" asp-for="Command" id="pieceCommand" value="AiMove"/>
+                            <input type="hidden" asp-for="Id"/>
+                            <input type="hidden" asp-for="Mode"/>
+                            <input type="hidden" asp-for="PlayerName"/>
+                            <input type="hidden" asp-for="PlayerPass"/>
+                            <input type="hidden" asp-for="GameStateJson"
+                                   value="@Model.GameInstance.GetGameStateJson()"/>
+                            <input type="hidden" asp-for="ConfigName" value="@Model.GameInstance.GetGameConfigName()"/>
+                            <div>
+                                <input type="submit" value="AI move" class="btn btn-warning">
+                            </div>
+                        </form>
+                    }
+                    <form method="post">
+                        <div class="save-game-button">
+                            <input type="hidden" asp-for="Id"/>
+                            <input type="hidden" asp-for="Mode"/>
+                            <input type="hidden" asp-for="PlayerName"/>
+                            <input type="hidden" asp-for="PlayerPass"/>
+                            <input type="hidden" asp-for="Command" value="SaveTheGame"/>
+                            <input type="hidden" asp-for="GameStateJson"
+                                   value="@Model.GameInstance.GetGameStateJson()"/>
+                            <input type="hidden" asp-for="ConfigName" value="@Model.GameInstance.GetGameConfigName()"/>
+                            <input type="submit" value="Create new save" class="btn btn-warning"/>
+                        </div>
+                    </form>
+                    <form method="post">
+                        <div class="save-exit-game-button">
+                            <input type="hidden" asp-for="Id"/>
+                            <input type="hidden" asp-for="Mode"/>
+                            <input type="hidden" asp-for="PlayerName"/>
+                            <input type="hidden" asp-for="PlayerPass"/>
+                            <input type="hidden" asp-for="Command" value="SaveAndExitTheGame"/>
+                            <input type="hidden" asp-for="GameStateJson"
+                                   value="@Model.GameInstance.GetGameStateJson()"/>
+                            <input type="hidden" asp-for="ConfigName" value="@Model.GameInstance.GetGameConfigName()"/>
+                            <input type="submit" value="Save and exit" class="btn btn-warning"/>
+                        </div>
+                    </form>
+                    <form method="post">
+                        <div class="exit-game-button">
+                            <input type="hidden" asp-for="Id"/>
+                            <input type="hidden" asp-for="Mode"/>
+                            <input type="hidden" asp-for="PlayerName"/>
+                            <input type="hidden" asp-for="PlayerPass"/>
+                            <input type="hidden" asp-for="Command" value="ExitTheGame"/>
+                            <input type="submit" value="Exit without saving" class="btn btn-warning"/>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="game__board">
+        @for (var y = 0; y < Model.GameInstance.DimY; y++)
+        {
+            <div class="row">
+                @for (var x = 0; x < Model.GameInstance.DimX; x++)
+                {
+                    if (Model.GameInstance.GameGrid.IsUnderGridArea(x, y))
+                    {
+                        <div id="@x,@y" name="pieceButton" class="cell--piece cell--grid">
+                            <div class="piece">
+                                @EnumHelper.EGamePieceToString(Model.GameInstance.GameBoard[x][y])
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="@x,@y" name="pieceButton" class="cell--piece">
+                            <div class="piece">
+                                @EnumHelper.EGamePieceToString(Model.GameInstance.GameBoard[x][y])
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

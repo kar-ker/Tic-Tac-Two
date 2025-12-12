@@ -1,0 +1,133 @@
+@page
+@using GameBrain
+@model WebApp.Pages.GameModeOptionsModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Options</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    @if (Model.Mode == EGameMode.PvP.ToString())
+    {
+        <form method="post">
+            <thead>
+            <tr>
+                <th>
+                    Start New Player vs Player Game
+                </th>
+
+                <div>
+                    <label asp-for="SelectedSymbol">Pick Player1 symbol:</label>
+                    <select asp-for="SelectedSymbol" class="form-control" asp-items="Model.SymbolOptions">
+                        <option value="">-- Select an Option --</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="StartingName">Choose which Player starts:</label>
+                    <select asp-for="StartingName" class="form-control" asp-items="Model.PlayerOptions">
+                        <option value="">-- Select an Option --</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="Player1Pass">Make Player1 password:</label>
+                    <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                </div>
+                <div>
+                    <label asp-for="Player2Pass">Make Player2 password:</label>
+                    <input  asp-for="Player2Pass" placeholder="Enter password" class="form-control">
+                </div>
+                
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button type="submit" asp-route-id="@Model.Id" asp-route-mode="@Model.Mode">
+                        Create
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </form>
+    }
+    @if (Model.Mode == EGameMode.PvAi.ToString())
+    {
+        <form method="post">
+            <thead>
+            <tr>
+                <th>
+                    Start New Player vs Ai Game
+                </th>
+
+                <div>
+                    <label asp-for="SelectedSymbol">Pick Player symbol:</label>
+                    <select asp-for="SelectedSymbol" class="form-control" asp-items="Model.SymbolOptions">
+                        <option value="">-- Select an Option --</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="StartingName">Choose who starts:</label>
+                    <select asp-for="StartingName" class="form-control" asp-items="Model.PlayerOptions">
+                        <option value="">-- Select an Option --</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="Player1Pass">Make Player password:</label>
+                    <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                </div>
+                
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button type="submit" asp-route-id="@Model.Id" asp-route-mode="@Model.Mode">
+                        Create
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </form>
+    }
+    @if (Model.Mode == EGameMode.AivAi.ToString())
+    {
+        <form method="post">
+            <thead>
+            <tr>
+                <th>
+                    Start New Ai vs Ai Game
+                </th>
+
+                <div>
+                    <label asp-for="SelectedSymbol">Pick Ai1 symbol:</label>
+                    <select asp-for="SelectedSymbol" class="form-control" asp-items="Model.SymbolOptions">
+                        <option value="">-- Select an Option --</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="Player1Pass">Make a login password:</label>
+                    <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                </div>
+                
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button type="submit" asp-route-id="@Model.Id" asp-route-mode="@Model.Mode">
+                        Create
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </form>
+    }
+</table>

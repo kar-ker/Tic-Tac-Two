@@ -1,0 +1,107 @@
+@page
+@using System.Text.Json
+@using GameBrain
+@using Microsoft.EntityFrameworkCore
+@model WebApp.Pages.SaveGames.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Saved Games Menu</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Saved games
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (var i = Model.SaveGames.Count - 1; i > -1; i--) // i-- is used to reverse the order.
+    {
+        var gameState = JsonSerializer.Deserialize<GameState>(Model.SaveGames[i].State);
+        if (gameState != null)
+        {
+            var mode = gameState.GameMode;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.SaveGames[i].SaveGameName)
+                </td>
+
+                <form method="post">
+                    <input type="hidden" asp-for="Id" value="@Model.SaveGames[i].Id"/>
+                    <input type="hidden" asp-for="Mode" value="@mode"/>
+
+                    <td>
+                        <div>
+                            @EnumHelper.EGameModeToString(mode)
+                        </div>
+                        @if (gameState.GameOver)
+                        {
+                            <div>
+                                Game Over!
+                            </div>
+                        }
+                    </td>
+                    <td>
+                        @if (gameState.GameMode == EGameMode.PvP)
+                        {
+                            <div>
+                                <label asp-for="Player1Pass">Join as Player1 with
+                                    symbol @EnumHelper.EGamePieceToString(gameState.Player1.PlSymbol):</label>
+                                <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                                <button type="submit" asp-route-playerName=@gameState.Player1.PlName>GO
+                                </button>
+                            </div>
+                            <div>
+                                <label asp-for="Player2Pass">Join as Player2 with
+                                    symbol @EnumHelper.EGamePieceToString(gameState.Player2.PlSymbol):</label>
+                                <input asp-for="Player2Pass" placeholder="Enter password" class="form-control">
+                                <button type="submit" asp-route-playerName=@gameState.Player2.PlName>GO
+                                </button>
+                            </div>
+                        }
+                        else if (gameState.GameMode == EGameMode.PvAi)
+                        {
+                            <div>
+                                <label asp-for="Player1Pass">Join as the Player with
+                                    symbol @EnumHelper.EGamePieceToString(gameState.Player1.PlSymbol):</label>
+                                <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                                <button type="submit" asp-route-playerName=@gameState.Player1.PlName>GO
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                <label asp-for="Player1Pass">Join as a Spectator to an AI game</label>
+                                <input asp-for="Player1Pass" placeholder="Enter password" class="form-control">
+                                <button type="submit" asp-route-playerName="Spectator">GO
+                                </button>
+                            </div>
+                        }
+                                
+                    </td>
+                    <td>
+
+                        |
+                        <a asp-page="Details" asp-route-id="@Model.SaveGames[i].Id">Details</a>
+                    </td>
+
+                </form>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>
+                    Nothing to show here
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

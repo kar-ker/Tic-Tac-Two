@@ -1,0 +1,47 @@
+@page
+@model WebApp.Pages.Configurations.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>New Game Menu</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <form method="post">
+    <thead>
+        <tr>
+            <th>
+                Configurations
+            </th>
+            
+                <div>
+                    <label asp-for="SelectedOption">Choose game mode:</label>
+                    <select asp-for="SelectedOption" class="form-control" asp-items="Model.Options">
+                        <option value="">-- Select a game mode --</option>
+                    </select>
+                </div>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Configurations)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ConfigName)
+                </td>
+                <td>
+                    <button type="submit" asp-route-id="@item.Id">
+                        Create new game with this configuration
+                    </button>
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    </form>
+</table>

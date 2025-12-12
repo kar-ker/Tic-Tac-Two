@@ -1,0 +1,87 @@
+@page
+@using Microsoft.IdentityModel.Tokens
+@model WebApp.Pages_Configurations.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Configuration</h4>
+<hr/>
+<div class="row">
+    <div class="col-md-4">
+        @if (!Model.Errors.IsNullOrEmpty())
+        {
+            foreach (var error in Model.Errors!)
+            {
+                <div class="alert-danger">@error</div>
+            }
+        }
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Configuration.ConfigName" class="control-label"></label>
+                <input asp-for="Configuration.ConfigName" class="form-control"/>
+                <span asp-validation-for="Configuration.ConfigName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.BoardSizeWidth" class="control-label"></label>
+                <input asp-for="Configuration.BoardSizeWidth" class="form-control"/>
+                <span asp-validation-for="Configuration.BoardSizeWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.BoardSizeHeight" class="control-label"></label>
+                <input asp-for="Configuration.BoardSizeHeight" class="form-control"/>
+                <span asp-validation-for="Configuration.BoardSizeHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.WinCondition" class="control-label"></label>
+                <input asp-for="Configuration.WinCondition" class="form-control"/>
+                <span asp-validation-for="Configuration.WinCondition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.GridSide" class="control-label"></label>
+                <input asp-for="Configuration.GridSide" class="form-control"/>
+                <span asp-validation-for="Configuration.GridSide" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.GridX" class="control-label"></label>
+                <input asp-for="Configuration.GridX" class="form-control"/>
+                <span asp-validation-for="Configuration.GridX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.GridY" class="control-label"></label>
+                <input asp-for="Configuration.GridY" class="form-control"/>
+                <span asp-validation-for="Configuration.GridY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.NumberOfPieces" class="control-label"></label>
+                <input asp-for="Configuration.NumberOfPieces" class="form-control"/>
+                <span asp-validation-for="Configuration.NumberOfPieces" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.StartMovingPieceOnTurnN" class="control-label"></label>
+                <input asp-for="Configuration.StartMovingPieceOnTurnN" class="form-control"/>
+                <span asp-validation-for="Configuration.StartMovingPieceOnTurnN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Configuration.StartMovingGridOnTurnN" class="control-label"></label>
+                <input asp-for="Configuration.StartMovingGridOnTurnN" class="form-control"/>
+                <span asp-validation-for="Configuration.StartMovingGridOnTurnN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
